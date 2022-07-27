@@ -8,7 +8,7 @@ public class MeshAnalyzer : MonoBehaviour
     public MeshFilter meshFilterPrefab;
     public static readonly float PRECISION_ERROR = 0.0001f;
 
-    private Dictionary<string, FaceData> meshFaceDataMap = new Dictionary<string, FaceData>();
+    private List<FaceData> faceDatas = new List<FaceData>();
     private Vector3 centroid = (new Vector3(0.86603f, 0, -1.50f) + new Vector3(1.7321f, 0, 0)) / 3;
     private Vector3 sideOffset = new Vector3(0.86603f, 0, 0); // Subtract this from a side face to get the face geometry in a form that is symmetrical across x=0;
     private Matrix4x4 transMat;
@@ -22,10 +22,10 @@ public class MeshAnalyzer : MonoBehaviour
         rotMat = Matrix4x4.Rotate(Quaternion.Euler(0, 120, 0));
         returnMat = Matrix4x4.Translate(centroid);
 
-        SetUpMap();
+        SetUpList();
     }
 
-    private void SetUpMap()
+    public List<FaceData> SetUpList()
     {
         List<Mesh> meshes = new List<Mesh>(Resources.LoadAll<Mesh>("Meshes"));
         Debug.Log(meshes.Count);
@@ -67,9 +67,9 @@ public class MeshAnalyzer : MonoBehaviour
                     faceData.rightFace.Add(new Vertex(v - sideOffset));
             }
 
-            meshFaceDataMap[m.name] = faceData;
-            Debug.Log($"{m.name}: {faceData.IsSymmetrical()}");
+            faceDatas.Add(faceData);
         }
+        return faceDatas;
     }
 
     private Vector3[] RotateVertices(Vector3[] vertices)
@@ -91,43 +91,19 @@ public class MeshAnalyzer : MonoBehaviour
 public class FaceData
 {
     public string meshName;
-    public SortedSet<Vertex> backFace;
-    public SortedSet<Vertex> rightFace;
-    public SortedSet<Vertex> leftFace;
-    public SortedSet<Vertex> topFace;
-    public SortedSet<Vertex> bottomFace;
+    public Face backFace;
+    public Face rightFace;
+    public Face leftFace;
+    public Face topFace;
+    public Face bottomFace;
 
     public FaceData(string meshName)
     {
         this.meshName = meshName;
-        backFace = new SortedSet<Vertex>();
-        rightFace = new SortedSet<Vertex>();
-        leftFace = new SortedSet<Vertex>();
-        topFace = new SortedSet<Vertex>();
-        bottomFace = new SortedSet<Vertex>();
-    }
-
-    public bool IsSymmetrical()
-    {
-        return AreFacesEqual(backFace, rightFace) && AreFacesEqual(rightFace, leftFace);
-    }
-
-    private bool AreFacesEqual(SortedSet<Vertex> face1, SortedSet<Vertex> face2)
-    {
-        if (face1.Equals(face2))
-            return true;
-        if (face1.Count != face2.Count)
-            return false;
-
-        // This is pretty gross, but the floating point precision errors were making .SetEquals() a non-option
-        List<Vertex> list1 = new List<Vertex>(face1);
-        List<Vertex> list2 = new List<Vertex>(face2);
-        for (int i = 0; i < list1.Count; ++i)
-        {
-            if (list1[i] != list2[i])
-                return false;
-        }
-
-        return true;
+        backFace = new Face();
+        rightFace = new Face();
+        leftFace = new Face();
+        topFace = new Face();
+        bottomFace = new Face();
     }
 }
