@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class MeshAnalyzer : MonoBehaviour
+public class MeshAnalyzer
 {
     public MeshFilter meshFilterPrefab;
     public static readonly float PRECISION_ERROR = 0.0001f;

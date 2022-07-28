@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Main : MonoBehaviour
 {
-    public MeshAnalyzer meshAnalyzer;
-    public DataManager dataManager;
+    private MeshAnalyzer meshAnalyzer = new MeshAnalyzer();
     private SocketManager socketManager = new SocketManager();
 
     // Start is called before the first frame update
@@ -14,6 +13,7 @@ public class Main : MonoBehaviour
         meshAnalyzer.Init();
         List<FaceData> faceDatas = meshAnalyzer.SetUpList();
         ModuleSet moduleSet = socketManager.GetModuleSet(faceDatas);
-        dataManager.SaveModules(moduleSet);
+        NeighborManager.SetValidNeighbors(moduleSet);
+        DataManager.SaveModules(moduleSet);
     }
 }
