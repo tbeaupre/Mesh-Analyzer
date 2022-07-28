@@ -13,9 +13,9 @@ public class Face
         this.vertices = new SortedSet<Vertex>();
     }
 
-    public Face(List<Vertex> vertices)
+    public Face(SortedSet<Vertex> vertices)
     {
-        this.vertices = new SortedSet<Vertex>(vertices);
+        this.vertices = vertices;
     }
 
     public void Add(Vertex v)
@@ -23,14 +23,13 @@ public class Face
         vertices.Add(v);
     }
 
-    public Face GetRotatedFace(float degrees)
+    public Face GetRotatedFace(Matrix4x4 mat)
     {
-        Matrix4x4 flipMat = Matrix4x4.Rotate(Quaternion.Euler(0, degrees, 0));
-        List<Vertex> rotatedVerts = new List<Vertex>();
+        SortedSet<Vertex> rotatedVerts = new SortedSet<Vertex>();
 
         foreach (Vertex v in vertices)
         {
-            var pt = flipMat.MultiplyPoint3x4(v.position);
+            var pt = mat.MultiplyPoint3x4(v.position);
             rotatedVerts.Add(new Vertex(pt));
         }
 
@@ -39,13 +38,15 @@ public class Face
 
     public bool IsFaceRotationallySymmetrical()
     {
-        rotatedFace = GetRotatedFace(120);
+        Matrix4x4 rotMat = Matrix4x4.Rotate(Quaternion.Euler(0, 0, 120));
+        rotatedFace = GetRotatedFace(rotMat);
         return this == rotatedFace;
     }
 
     public bool IsFaceSymmetrical()
     {
-        flippedFace = GetRotatedFace(180);
+        Matrix4x4 flipMat = Matrix4x4.Rotate(Quaternion.Euler(0, 180, 0));
+        flippedFace = GetRotatedFace(flipMat);
         return this == flippedFace;
     }
 
