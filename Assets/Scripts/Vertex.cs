@@ -38,9 +38,8 @@ public struct Vertex : IComparable<Vertex>
 
     public int CompareTo(Vertex other)
     {
-        if (position.x.CompareTo(other.position.x) != 0)
-            return position.x.CompareTo(other.position.x);
-        else
+        if (Mathf.Abs(position.x - other.position.x) < MeshAnalyzer.PRECISION_ERROR)
             return position.y.CompareTo(other.position.y);
+        return position.x.CompareTo(other.position.x);
     }
 }
