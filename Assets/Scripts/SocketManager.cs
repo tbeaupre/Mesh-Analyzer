@@ -7,7 +7,7 @@ public class SocketManager
     Dictionary<Face, string> socketMap = new Dictionary<Face, string>();
     private int socketCount = 0;
 
-    ModuleSet GetModuleSet(List<FaceData> faceDatas)
+    public ModuleSet GetModuleSet(List<FaceData> faceDatas)
     {
         List<Module> modules = new List<Module>();
 
@@ -69,7 +69,7 @@ public class SocketManager
     string GetSocketForSideFace(Face face)
     {
         Face key = SocketMapContainsFace(face);
-        if (key != null)
+        if (!(key is null))
             return socketMap[key];
 
         string newSocket;
@@ -93,7 +93,7 @@ public class SocketManager
     string GetSocketForVerticalFace(Face face)
     {
         Face key = SocketMapContainsFace(face);
-        if (key != null)
+        if (!(key is null))
             return socketMap[key];
 
         string newSocket;
@@ -109,7 +109,8 @@ public class SocketManager
             socketMap.Add(face.rotatedFace, r1Socket);
 
             string r2Socket = $"v{socketCount}_2";
-            socketMap.Add(face.rotatedFace.GetRotatedFace(120), r2Socket);
+            Matrix4x4 rotMat = Matrix4x4.Rotate(Quaternion.Euler(0, 0, 120));
+            socketMap.Add(face.rotatedFace.GetRotatedFace(rotMat), r2Socket);
         }
 
         socketMap.Add(face, newSocket);

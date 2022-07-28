@@ -15,14 +15,11 @@ public class MeshAnalyzer : MonoBehaviour
     private Matrix4x4 rotMat;
     private Matrix4x4 returnMat;
 
-    // Start is called before the first frame update
-    void Start()
+    public void Init()
     {
         transMat = Matrix4x4.Translate(-centroid);
         rotMat = Matrix4x4.Rotate(Quaternion.Euler(0, 120, 0));
         returnMat = Matrix4x4.Translate(centroid);
-
-        SetUpList();
     }
 
     public List<FaceData> SetUpList()
