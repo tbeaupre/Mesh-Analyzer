@@ -9,6 +9,10 @@ public class SocketManager
 
     public ModuleSet GetModuleSet(List<FaceData> faceDatas)
     {
+        Face emptyFace = new Face();
+        socketMap.Add(emptyFace, "0s");
+        socketCount++;
+
         List<Module> modules = new List<Module>();
 
         foreach (FaceData faceData in faceDatas)
@@ -20,31 +24,10 @@ public class SocketManager
             if (m.sockets.top.EndsWith("s") && m.sockets.bottom.EndsWith("s"))
                 continue;
 
-            Module m1 = new Module();
-            m1.name = m.name + "_1";
-            m1.meshName = m.meshName;
-            m1.rotation = 1;
-            SocketSet sockets1 = new SocketSet();
-            sockets1.back = m.sockets.left;
-            sockets1.right = m.sockets.back;
-            sockets1.left = m.sockets.right;
-            sockets1.top = GetRotatedVerticalSocketString(m.sockets.top);
-            sockets1.bottom = GetRotatedVerticalSocketString(m.sockets.bottom);
-            m1.sockets = sockets1;
+            Module m1 = Module.GetRotatedModule(m);
             modules.Add(m1);
 
-            Module m2 = new Module();
-            m2.name = m.name + "_2";
-            m2.meshName = m.meshName;
-            m2.rotation = 2;
-            SocketSet sockets2 = new SocketSet();
-            sockets2.back = m.sockets.right;
-            sockets2.right = m.sockets.left;
-            sockets2.left = m.sockets.back;
-            sockets2.top = GetRotatedVerticalSocketString(m1.sockets.top);
-            sockets2.bottom = GetRotatedVerticalSocketString(m1.sockets.bottom);
-            m2.sockets = sockets2;
-            modules.Add(m2);
+            modules.Add(Module.GetRotatedModule(m1));
         }
 
         return new ModuleSet(modules.ToArray());
@@ -53,9 +36,10 @@ public class SocketManager
     Module GetModule(FaceData faceData)
     {
         Module result = new Module();
-        result.name = faceData.meshName;
+        result.name = faceData.name;
         result.meshName = faceData.meshName;
         result.rotation = 0;
+        result.isFacingUp = faceData.isFacingUp;
         result.sockets = new SocketSet();
 
         result.sockets.back = GetSocketForSideFace(faceData.backFace);
@@ -75,13 +59,13 @@ public class SocketManager
         string newSocket;
         if (face.IsFaceSymmetrical())
         {
-            newSocket = socketCount + "s";
+            newSocket = $"{socketCount}s";
         }
         else
         {
             newSocket = socketCount.ToString();
 
-            string flippedSocket = socketCount + "f";
+            string flippedSocket = $"{socketCount}f";
             socketMap.Add(face.flippedFace, flippedSocket);
         }
 
@@ -126,13 +110,5 @@ public class SocketManager
                 return faceKey;
         }
         return null;
-    }
-    string GetRotatedVerticalSocketString(string socketName)
-    {
-        if (socketName.EndsWith("s"))
-            return socketName;
-        string[] subs = socketName.Split('_');
-        int socketRotation = (int.Parse(subs[1]) + 1) % 3;
-        return subs[0] + "_" + socketRotation;
     }
 }

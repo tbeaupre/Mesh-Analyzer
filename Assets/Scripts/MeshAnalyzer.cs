@@ -29,9 +29,11 @@ public class MeshAnalyzer
         foreach (Mesh m in meshes)
         {
             FaceData faceData = new FaceData(m.name);
+            Vector3 sumOfNormals = Vector3.zero;
 
             for (int i = 0; i < m.vertexCount; ++i)
             {
+                sumOfNormals += m.normals[i];
                 Vector3 v = m.vertices[i];
                 Debug.Log($"{m.name}: {v}");
                 if (Mathf.Abs(v.z) < PRECISION_ERROR)
@@ -64,8 +66,18 @@ public class MeshAnalyzer
                     faceData.rightFace.Add(new Vertex(v - sideOffset));
             }
 
+            // Check if the mesh is facing mostly up or mostly down.
+            faceData.isFacingUp = sumOfNormals.y > PRECISION_ERROR;
+
             faceDatas.Add(faceData);
         }
+        FaceData externalFaceData = new FaceData("", FaceData.EXTERNAL_NAME);
+        externalFaceData.isFacingUp = true;
+        FaceData internalFaceData = new FaceData("", FaceData.INTERNAL_NAME);
+        internalFaceData.isFacingUp = true;
+
+        faceDatas.Add(externalFaceData);
+        faceDatas.Add(internalFaceData);
         return faceDatas;
     }
 
@@ -87,16 +99,23 @@ public class MeshAnalyzer
 
 public class FaceData
 {
+    public static readonly string EXTERNAL_NAME = "EEE";
+    public static readonly string INTERNAL_NAME = "III";
+
+    public string name;
     public string meshName;
+    public bool isFacingUp;
     public Face backFace;
     public Face rightFace;
     public Face leftFace;
     public Face topFace;
     public Face bottomFace;
 
-    public FaceData(string meshName)
+    public FaceData(string meshName, string name = "")
     {
+        this.name = name != "" ? name : meshName;
         this.meshName = meshName;
+        isFacingUp = false;
         backFace = new Face();
         rightFace = new Face();
         leftFace = new Face();

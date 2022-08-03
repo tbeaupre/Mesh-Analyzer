@@ -9,6 +9,28 @@ public class NeighborManager
         foreach (Module module1 in moduleSet.modules)
         {
             module1.validNeighbors = new ValidNeighbors();
+
+            bool shouldAddTopNeighbors = module1.name == FaceData.INTERNAL_NAME ||
+                module1.sockets.top != "0s";
+            if (!shouldAddTopNeighbors)
+            {
+                if (module1.isFacingUp)
+                    module1.validNeighbors.top.Add(FaceData.EXTERNAL_NAME);
+                else
+                    module1.validNeighbors.top.Add(FaceData.INTERNAL_NAME);
+
+            }
+
+            bool shouldAddBottomNeighbors = module1.name == FaceData.EXTERNAL_NAME ||
+                module1.sockets.bottom != "0s";
+            if (!shouldAddBottomNeighbors)
+            {
+                if (module1.isFacingUp)
+                    module1.validNeighbors.bottom.Add(FaceData.INTERNAL_NAME);
+                else
+                    module1.validNeighbors.bottom.Add(FaceData.EXTERNAL_NAME);
+            }
+
             foreach (Module module2 in moduleSet.modules)
             {
                 if (AreSocketsCompatible(module1.sockets.back, module2.sockets.back))
@@ -20,10 +42,10 @@ public class NeighborManager
                 if (AreSocketsCompatible(module1.sockets.right, module2.sockets.right))
                     module1.validNeighbors.right.Add(module2.name);
 
-                if (AreSocketsCompatible(module1.sockets.top, module2.sockets.bottom))
+                if (shouldAddTopNeighbors && module2.name != FaceData.EXTERNAL_NAME && AreSocketsCompatible(module1.sockets.top, module2.sockets.bottom))
                     module1.validNeighbors.top.Add(module2.name);
 
-                if (AreSocketsCompatible(module1.sockets.bottom, module2.sockets.top))
+                if (shouldAddBottomNeighbors && module2.name != FaceData.INTERNAL_NAME && AreSocketsCompatible(module1.sockets.bottom, module2.sockets.top))
                     module1.validNeighbors.bottom.Add(module2.name);
             }
         }

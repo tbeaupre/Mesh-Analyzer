@@ -19,8 +19,39 @@ public class Module
     public string name;
     public string meshName;
     public int rotation;
+    public bool isFacingUp;
     public SocketSet sockets;
     public ValidNeighbors validNeighbors;
+
+    public static Module GetRotatedModule(Module m)
+    {
+        Module rotatedModule = new Module();
+        int newRotation = (m.rotation + 1) % 3;
+
+        string[] subs = m.name.Split('_');
+        rotatedModule.name = $"{subs[0]}_{newRotation}";
+
+        rotatedModule.meshName = m.meshName;
+        rotatedModule.rotation = newRotation;
+        rotatedModule.isFacingUp = m.isFacingUp;
+        SocketSet sockets = new SocketSet();
+        sockets.back = m.sockets.left;
+        sockets.right = m.sockets.back;
+        sockets.left = m.sockets.right;
+        sockets.top = GetRotatedVerticalSocketString(m.sockets.top);
+        sockets.bottom = GetRotatedVerticalSocketString(m.sockets.bottom);
+        rotatedModule.sockets = sockets;
+
+        return rotatedModule;
+    }
+    static string GetRotatedVerticalSocketString(string socketName)
+    {
+        if (socketName.EndsWith("s"))
+            return socketName;
+        string[] subs = socketName.Split('_');
+        int socketRotation = (int.Parse(subs[1]) + 1) % 3;
+        return $"{subs[0]}_{socketRotation}";
+    }
 }
 
 [System.Serializable]
