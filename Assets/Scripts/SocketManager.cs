@@ -21,7 +21,10 @@ public class SocketManager
             modules.Add(m);
 
             // Rotationally symmetrical prototypes don't need their rotations to be added to the list
-            if (m.sockets.top.EndsWith("s") && m.sockets.bottom.EndsWith("s"))
+            if (m.sockets.top.EndsWith("s") &&
+                m.sockets.bottom.EndsWith("s") &&
+                m.sockets.back == m.sockets.left &&
+                m.sockets.left == m.sockets.right)
                 continue;
 
             Module m1 = Module.GetRotatedModule(m);
@@ -40,6 +43,7 @@ public class SocketManager
         result.meshName = faceData.meshName;
         result.rotation = 0;
         result.isFacingUp = faceData.isFacingUp;
+        result.traversalScore = faceData.traversalScore;
         result.sockets = new SocketSet();
 
         result.sockets.back = GetSocketForSideFace(faceData.backFace);

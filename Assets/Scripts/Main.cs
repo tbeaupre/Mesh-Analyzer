@@ -12,6 +12,7 @@ public class Main : MonoBehaviour
     {
         meshAnalyzer.Init();
         List<FaceData> faceDatas = meshAnalyzer.SetUpList();
+        TraversalManager.SetTraversalScores(faceDatas);
         ModuleSet moduleSet = socketManager.GetModuleSet(faceDatas);
         NeighborManager.SetValidNeighbors(moduleSet);
         DataManager.SaveModules(moduleSet);

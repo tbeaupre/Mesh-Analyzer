@@ -23,6 +23,16 @@ public class Face
         vertices.Add(v);
     }
 
+    public bool ContainsPoint(Vertex target)
+    {
+        foreach (Vertex v in vertices)
+        {
+            if (v == target)
+                return true;
+        }
+        return false;
+    }
+
     public Face GetRotatedFace(Matrix4x4 mat)
     {
         SortedSet<Vertex> rotatedVerts = new SortedSet<Vertex>();

@@ -20,6 +20,7 @@ public class Module
     public string meshName;
     public int rotation;
     public bool isFacingUp;
+    public int traversalScore;
     public SocketSet sockets;
     public ValidNeighbors validNeighbors;
 
@@ -34,6 +35,7 @@ public class Module
         rotatedModule.meshName = m.meshName;
         rotatedModule.rotation = newRotation;
         rotatedModule.isFacingUp = m.isFacingUp;
+        rotatedModule.traversalScore = m.traversalScore;
         SocketSet sockets = new SocketSet();
         sockets.back = m.sockets.left;
         sockets.right = m.sockets.back;
