@@ -20,7 +20,7 @@ public class Module
     public string meshName;
     public int rotation;
     public bool isFacingUp;
-    public int traversalScore;
+    public TraversalSet traversalSet;
     public SocketSet sockets;
     public ValidNeighbors validNeighbors;
 
@@ -35,7 +35,15 @@ public class Module
         rotatedModule.meshName = m.meshName;
         rotatedModule.rotation = newRotation;
         rotatedModule.isFacingUp = m.isFacingUp;
-        rotatedModule.traversalScore = m.traversalScore;
+
+        TraversalSet traversalSet = new TraversalSet();
+        traversalSet.back = m.traversalSet.left;
+        traversalSet.right = m.traversalSet.back;
+        traversalSet.left = m.traversalSet.right;
+        traversalSet.top = m.traversalSet.top;
+        traversalSet.bottom = m.traversalSet.bottom;
+        rotatedModule.traversalSet = traversalSet;
+
         SocketSet sockets = new SocketSet();
         sockets.back = m.sockets.left;
         sockets.right = m.sockets.back;
@@ -53,6 +61,35 @@ public class Module
         string[] subs = socketName.Split('_');
         int socketRotation = (int.Parse(subs[1]) + 1) % 3;
         return $"{subs[0]}_{socketRotation}";
+    }
+}
+
+[System.Serializable]
+public class TraversalSet
+{
+    public bool back;
+    public bool right;
+    public bool left;
+    public bool top;
+    public bool bottom;
+
+    public bool GetIsTraversableInDirection(Direction dir)
+    {
+        switch (dir)
+        {
+            case Direction.Back:
+                return back;
+            case Direction.Right:
+                return right;
+            case Direction.Left:
+                return left;
+            case Direction.Top:
+                return top;
+            case Direction.Bottom:
+                return bottom;
+            default:
+                return top;
+        }
     }
 }
 

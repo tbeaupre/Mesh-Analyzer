@@ -105,7 +105,7 @@ public class FaceData
     public string name;
     public string meshName;
     public bool isFacingUp;
-    public int traversalScore;
+    public TraversalSet traversalSet;
     public Face backFace;
     public Face rightFace;
     public Face leftFace;
@@ -117,7 +117,7 @@ public class FaceData
         this.name = name != "" ? name : meshName;
         this.meshName = meshName;
         isFacingUp = false;
-        traversalScore = 0;
+        traversalSet = new TraversalSet();
         backFace = new Face();
         rightFace = new Face();
         leftFace = new Face();

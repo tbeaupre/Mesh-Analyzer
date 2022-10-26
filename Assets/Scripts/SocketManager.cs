@@ -43,14 +43,15 @@ public class SocketManager
         result.meshName = faceData.meshName;
         result.rotation = 0;
         result.isFacingUp = faceData.isFacingUp;
-        result.traversalScore = faceData.traversalScore;
-        result.sockets = new SocketSet();
+        result.traversalSet = faceData.traversalSet;
 
+        result.sockets = new SocketSet();
         result.sockets.back = GetSocketForSideFace(faceData.backFace);
         result.sockets.right = GetSocketForSideFace(faceData.rightFace);
         result.sockets.left = GetSocketForSideFace(faceData.leftFace);
         result.sockets.top = GetSocketForVerticalFace(faceData.topFace);
         result.sockets.bottom = GetSocketForVerticalFace(faceData.bottomFace);
+
         return result;
     }
 

@@ -5,6 +5,11 @@ public struct Vertex : IComparable<Vertex>
 {
     public Vector2 position;
 
+    public Vertex(float x, float y)
+    {
+        this.position = new Vector2(x, y);
+    }
+
     public Vertex(Vector2 position)
     {
         this.position = position;
