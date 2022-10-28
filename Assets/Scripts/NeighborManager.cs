@@ -33,13 +33,13 @@ public class NeighborManager
 
             foreach (Module module2 in moduleSet.modules)
             {
-                if (AreSocketsCompatible(module1.sockets.back, module2.sockets.back))
+                if (AreModuleFacesCompatible(module1, module2, Direction.Back))
                     module1.validNeighbors.back.Add(module2.name);
 
-                if (AreSocketsCompatible(module1.sockets.left, module2.sockets.left))
+                if (AreModuleFacesCompatible(module1, module2, Direction.Left))
                     module1.validNeighbors.left.Add(module2.name);
 
-                if (AreSocketsCompatible(module1.sockets.right, module2.sockets.right))
+                if (AreModuleFacesCompatible(module1, module2, Direction.Right))
                     module1.validNeighbors.right.Add(module2.name);
 
                 if (shouldAddTopNeighbors && module2.name != FaceData.EXTERNAL_NAME && AreSocketsCompatible(module1.sockets.top, module2.sockets.bottom))
@@ -48,6 +48,41 @@ public class NeighborManager
                 if (shouldAddBottomNeighbors && module2.name != FaceData.INTERNAL_NAME && AreSocketsCompatible(module1.sockets.bottom, module2.sockets.top))
                     module1.validNeighbors.bottom.Add(module2.name);
             }
+        }
+    }
+
+    private static bool AreModuleFacesCompatible(Module module1, Module module2, Direction dir)
+    {
+        if (!AreSocketsCompatible(module1.sockets.GetSocketInDirection(dir), module2.sockets.GetSocketInDirection(dir)))
+            return false;
+        if (module1.meshName == module2.meshName && module1.name != module2.name && module1.rotation == module2.rotation) // Internal/External Combo
+            return false;
+        if (module1.name == FaceData.EXTERNAL_NAME && module2.meshName.Length != 0)
+            return ExternalCheck(module2, dir);
+        if (module2.name == FaceData.EXTERNAL_NAME && module1.meshName.Length != 0)
+            return ExternalCheck(module1, dir);
+        if (module1.name == FaceData.INTERNAL_NAME && module2.meshName.Length != 0)
+            return !ExternalCheck(module2, dir);
+        if (module2.name == FaceData.INTERNAL_NAME && module1.meshName.Length != 0)
+            return !ExternalCheck(module1, dir);
+        return true;
+    }
+
+    // Checks if a blank face should be considered External.
+    private static bool ExternalCheck(Module module, Direction dir)
+    {
+        if (module.traversalSet.top)
+            return false;
+
+        string cliffStr = module.meshName.Split('-')[1]; // Ex: FFF-CCE-R
+        switch (dir)
+        {
+            case Direction.Back:
+                return cliffStr[(-module.rotation + 3) % 3] == 'E' || cliffStr[(1 - module.rotation + 3) % 3] == 'E';
+            case Direction.Right:
+                return cliffStr[(1 - module.rotation + 3) % 3] == 'E' || cliffStr[(2 - module.rotation + 3) % 3] == 'E';
+            default: // Direction.Left
+                return cliffStr[(2 - module.rotation + 3) % 3] == 'E' || cliffStr[(-module.rotation + 3) % 3] == 'E';
         }
     }
 

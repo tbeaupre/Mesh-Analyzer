@@ -46,8 +46,8 @@ public class TraversalManager
     static bool IsTraversableOnSide(Face face)
     {
         return face.ContainsPoint(new Vertex(0, 0.5f)) ||
-            face.ContainsPoint(new Vertex(0, 1)) ||
-            (face.ContainsPoint(new Vertex(0, 0)) && // Covers Hills
+            face.ContainsPoint(new Vertex(0, 1)) || // Covers Hills
+            (face.ContainsPoint(new Vertex(0, 0)) &&
                 (face.ContainsPoint(new Vertex(0.433013f, 0.25f)) || // Covers Hilltops but not Ocean
                 face.ContainsPoint(new Vertex(-0.433013f, 0.25f))));
     }
