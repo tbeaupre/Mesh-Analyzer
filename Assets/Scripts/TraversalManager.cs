@@ -36,11 +36,14 @@ public class TraversalManager
 
     static bool IsTraversableBelow(FaceData fd)
     {
+        if (fd.meshName.Contains('O'))
+            return false;
+
         bool back = fd.backFace.ContainsPoint(new Vertex(0, 0));
         bool right = fd.rightFace.ContainsPoint(new Vertex(0, 0));
         bool left = fd.leftFace.ContainsPoint(new Vertex(0, 0));
 
-        return ((back && right) || (right && left) || (left && back));
+        return ((back && right && !left) || (right && left && !back) || (left && back && !right));
     }
 
     static bool IsTraversableOnSide(Face face)
