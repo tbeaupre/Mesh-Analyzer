@@ -48,7 +48,7 @@ public class Face
 
     public bool IsFaceRotationallySymmetrical()
     {
-        Matrix4x4 rotMat = Matrix4x4.Rotate(Quaternion.Euler(0, 0, 120));
+        Matrix4x4 rotMat = Matrix4x4.Rotate(Quaternion.Euler(0, 0, -120));
         rotatedFace = GetRotatedFace(rotMat);
         return this == rotatedFace;
     }

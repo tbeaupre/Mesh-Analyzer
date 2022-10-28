@@ -98,7 +98,7 @@ public class SocketManager
             socketMap.Add(face.rotatedFace, r1Socket);
 
             string r2Socket = $"v{socketCount}_2";
-            Matrix4x4 rotMat = Matrix4x4.Rotate(Quaternion.Euler(0, 0, 120));
+            Matrix4x4 rotMat = Matrix4x4.Rotate(Quaternion.Euler(0, 0, -120));
             socketMap.Add(face.rotatedFace.GetRotatedFace(rotMat), r2Socket);
         }
 
