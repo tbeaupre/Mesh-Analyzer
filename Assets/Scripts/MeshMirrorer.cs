@@ -3,25 +3,41 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class MeshMirrorer
+public static class MeshMirrorer
 {
-    HashSet<string> meshNames = new HashSet<string>();
-    List<Mesh> mirroredMeshes = new List<Mesh>();
+    static HashSet<string> meshNames = new HashSet<string>();
+    static List<Mesh> mirroredMeshes = new List<Mesh>();
 
-    public MeshMirrorer()
+    public static List<Mesh> GetMeshesWithMirrors()
     {
         List<Mesh> meshes = new List<Mesh>(Resources.LoadAll<Mesh>("Meshes"));
+        InitMeshNames(meshes);
 
-        foreach(Mesh mesh in meshes)
+        List<Mesh> results = new List<Mesh>(meshes);
+
+        foreach (Mesh mesh in meshes)
         {
-            string rotatedMeshName = MeshNameHelper.GetRotatedMeshName(mesh.name);
-            meshNames.Add(mesh.name);
-            meshNames.Add(rotatedMeshName);
-            meshNames.Add(MeshNameHelper.GetRotatedMeshName(rotatedMeshName));
+            if (MeshNameHelper.IsSymmetrical(mesh.name))
+                continue;
+
+            Mesh mirroredMesh = MirrorMesh(mesh);
+            if (mirroredMesh is null)
+                continue;
+
+            mirroredMeshes.Add(mirroredMesh);
+            meshNames.Add(mirroredMesh.name);
+            results.Add(mirroredMesh);
         }
 
-        MirrorMeshes(meshes);
+        ExportMirroredMeshes();
 
+        return results;
+    }
+
+    private static void ExportMirroredMeshes()
+    {
+        AssetDatabase.DeleteAsset("Assets/Resources/Mirrors");
+        AssetDatabase.CreateFolder("Assets/Resources", "Mirrors");
         foreach (Mesh mesh in mirroredMeshes)
         {
             AssetDatabase.CreateAsset(mesh, $"Assets/Resources/Mirrors/{mesh.name}.asset");
@@ -29,23 +45,19 @@ public class MeshMirrorer
         AssetDatabase.SaveAssets();
     }
 
-    public void MirrorMeshes(List<Mesh> meshes)
+
+    private static void InitMeshNames(List<Mesh> meshes)
     {
         foreach (Mesh mesh in meshes)
         {
-            if (MeshNameHelper.IsSymmetrical(mesh.name))
-                continue;
-
-            Mesh mirroredMesh = MirrorMesh(mesh);
-            if (mirroredMesh is not null)
-            {
-                mirroredMeshes.Add(mirroredMesh);
-                meshNames.Add(mirroredMesh.name);
-            }
+            meshNames.Add(mesh.name);
+            string rotatedMeshName = MeshNameHelper.GetRotatedMeshName(mesh.name);
+            meshNames.Add(rotatedMeshName);
+            meshNames.Add(MeshNameHelper.GetRotatedMeshName(rotatedMeshName));
         }
     }
 
-    private Mesh MirrorMesh(Mesh mesh)
+    private static Mesh MirrorMesh(Mesh mesh)
     {
         string mirroredMeshName = MeshNameHelper.GetMirroredMeshName(mesh.name);
         if (meshNames.Contains(mirroredMeshName))

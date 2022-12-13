@@ -22,9 +22,8 @@ public class MeshAnalyzer
         returnMat = Matrix4x4.Translate(centroid);
     }
 
-    public List<FaceData> SetUpList()
+    public List<FaceData> SetUpList(List<Mesh> meshes)
     {
-        List<Mesh> meshes = new List<Mesh>(Resources.LoadAll<Mesh>("Meshes"));
         Debug.Log(meshes.Count);
         foreach (Mesh m in meshes)
         {

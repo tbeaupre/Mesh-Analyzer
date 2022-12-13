@@ -12,9 +12,9 @@ public class MeshNameHelper
         {
             if (result != "")
                 result += "-";
-            result += substr[1];
             result += substr[2];
             result += substr[0];
+            result += substr[1];
         }
 
         return result;

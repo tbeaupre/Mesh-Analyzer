@@ -54,6 +54,7 @@ public class Module
 
         return rotatedModule;
     }
+
     static string GetRotatedVerticalSocketString(string socketName)
     {
         if (socketName.EndsWith("s"))
