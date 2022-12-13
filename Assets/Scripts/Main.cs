@@ -10,6 +10,8 @@ public class Main : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        new MeshMirrorer();
+
         meshAnalyzer.Init();
         List<FaceData> faceDatas = meshAnalyzer.SetUpList();
         TraversalManager.SetTraversalScores(faceDatas);
