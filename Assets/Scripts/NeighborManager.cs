@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class NeighborManager
 {
@@ -55,6 +56,7 @@ public class NeighborManager
     {
         if (!AreSocketsCompatible(module1.sockets.GetSocketInDirection(dir), module2.sockets.GetSocketInDirection(dir)))
             return false;
+
         if (module1.meshName == module2.meshName && module1.name != module2.name && module1.rotation == module2.rotation) // Internal/External Combo
             return false;
         if (module1.name == FaceData.EXTERNAL_NAME && module2.meshName.Length != 0)
@@ -65,7 +67,34 @@ public class NeighborManager
             return !ExternalCheck(module2, dir);
         if (module2.name == FaceData.INTERNAL_NAME && module1.meshName.Length != 0)
             return !ExternalCheck(module1, dir);
+
+        if (IsStraightCliff(module1) && IsStraightCliff(module2) && !IsCliffBackInDir(module1, dir))
+            return false;
+
         return true;
+    }
+
+    private static bool IsCliffBackInDir(Module module, Direction dir)
+    {
+        string cliffStr = module.meshName.Split('-')[1]; // Ex: FFF-CCE-R
+        switch (dir)
+        {
+            case Direction.Back:
+                return cliffStr[(-module.rotation + 3) % 3] != 'E' && cliffStr[(1 - module.rotation + 3) % 3] != 'E';
+            case Direction.Right:
+                return cliffStr[(1 - module.rotation + 3) % 3] != 'E' && cliffStr[(2 - module.rotation + 3) % 3] != 'E';
+            default: // Direction.Left
+                return cliffStr[(2 - module.rotation + 3) % 3] != 'E' && cliffStr[(-module.rotation + 3) % 3] != 'E';
+        }
+    }
+
+    private static bool IsStraightCliff(Module module)
+    {
+        if (module.meshName.Length == 0)
+            return false;
+
+        string cliffStr = module.meshName.Split('-')[1]; // Ex: FFF-CCE-R
+        return cliffStr.GroupBy(c => c).First(c => c.Key == 'E').Count() == 1;
     }
 
     // Checks if a blank face should be considered External.
